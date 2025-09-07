@@ -1,0 +1,91 @@
+version: "3"
+services:
+  nginx:
+    build:
+     context: requirements/nginx
+     dockerfile: Dockerfile
+    image: nginx
+    container_name: nginx
+    depends_on:
+     - wordpress
+    env_file:
+     - .env
+    ports:
+     - "443:443"
+    restart: always 
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+     - inception_network
+
+  wordpress:
+    build:
+     context: requirements/wordpress
+     dockerfile: Dockerfile
+    image: wordpress
+    container_name: wordpress
+    depends_on:
+     - redis
+     - mariadb
+    env_file:
+     - .env
+    restart: always
+    volumes:
+     - wordpress:/var/www/html
+    networks:
+     - inception_network
+
+  mariadb:
+    build:
+     context: requirements/mariadb
+     dockerfile: Dockerfile
+    image: mariadb
+    container_name: mariadb
+    env_file: .env
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+     - inception_network
+
+  redis:
+    build:
+     context: requirements/bonus/redis
+     dockerfile: Dockerfile
+    image: redis
+    container_name: redis
+    env_file: .env
+    restart: always
+    networks:
+     - inception_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    env_file:
+     - .env
+    depends_on:
+      - mariadb
+    networks:
+      - inception_network
+
+volumes:
+  wordpress:
+   driver: local
+   driver_opts:
+    type: 'none'
+    o: 'bind'
+    device: '/home/${USER}/data/wordpress'
+  db:
+   driver: local
+   driver_opts:
+    type: 'none'
+    o: 'bind'
+    device: '/home/${USER}/data/db'
+
+networks:
+ inception_network:
+  driver: bridge
