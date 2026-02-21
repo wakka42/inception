@@ -48,16 +48,16 @@ services:
     networks:
      - inception_network
 
-  redis:
-    build:
-     context: requirements/bonus/redis
-     dockerfile: Dockerfile
-    image: redis
-    container_name: redis
-    env_file: .env
-    restart: always
-    networks:
-     - inception_network
+  # redis:
+  #   build:
+  #    context: requirements/bonus/redis
+  #    dockerfile: Dockerfile
+  #   image: redis
+  #   container_name: redis
+  #   env_file: .env
+  #   restart: always
+  #   networks:
+  #    - inception_network
 
   phpmyadmin:
     image: phpmyadmin:latest
