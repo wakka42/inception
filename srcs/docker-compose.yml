@@ -82,7 +82,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
       - SUBDOMAINS=${DOMAIN_NAME}
-      - TOKEN="${TOKEN_DNS}"
+      - TOKEN=${TOKEN_DNS}
       - UPDATE_IP=ipv4
       - LOG_FILE=false
     # volumes:
