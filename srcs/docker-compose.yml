@@ -2,44 +2,46 @@ version: "3"
 services:
   nginx:
     build:
-     context: requirements/nginx
-     dockerfile: Dockerfile
+      context: requirements/nginx
+      dockerfile: Dockerfile
     image: nginx
     container_name: nginx
     depends_on:
-     - wordpress
+      - wordpress
     env_file:
-     - .env
+      - .env
     ports:
-     - "80:80" 
-     - "443:443"
-    restart: always 
+      - "80:80"
+      - "443:443"
+    restart: always
     volumes:
       - wordpress:/var/www/html
+      - ./requirements/nginx/sites-enabled:/etc/nginx/sites-enabled
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
-     - inception_network
+      - inception_network
 
   wordpress:
     build:
-     context: requirements/wordpress
-     dockerfile: Dockerfile
+      context: requirements/wordpress
+      dockerfile: Dockerfile
     image: wordpress
     container_name: wordpress
     depends_on:
-     - redis
-     - mariadb
+      - redis
+      - mariadb
     env_file:
-     - .env
+      - .env
     restart: always
     volumes:
-     - wordpress:/var/www/html
+      - wordpress:/var/www/html
     networks:
-     - inception_network
+      - inception_network
 
   mariadb:
     build:
-     context: requirements/mariadb
-     dockerfile: Dockerfile
+      context: requirements/mariadb
+      dockerfile: Dockerfile
     image: mariadb
     container_name: mariadb
     env_file: .env
@@ -47,18 +49,18 @@ services:
     volumes:
       - db:/var/lib/mysql
     networks:
-     - inception_network
+      - inception_network
 
   redis:
     build:
-     context: requirements/bonus/redis
-     dockerfile: Dockerfile
+      context: requirements/bonus/redis
+      dockerfile: Dockerfile
     image: redis
     container_name: redis
     env_file: .env
     restart: always
     networks:
-     - inception_network
+      - inception_network
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -67,7 +69,7 @@ services:
     ports:
       - "8080:80"
     env_file:
-     - .env
+      - .env
     depends_on:
       - mariadb
     networks:
@@ -76,34 +78,31 @@ services:
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
     container_name: duckdns
-    network_mode: host 
+    network_mode: host
     environment:
-      - PUID=1000 
+      - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - SUBDOMAINS=${DOMAIN_NAME}
       - TOKEN=${TOKEN_DNS}
       - UPDATE_IP=ipv4
       - LOG_FILE=false
-    # volumes:
-    #   - volumes:
-    #   - /home/${USER}/data/duckdns:/config
     restart: always
 
 volumes:
   wordpress:
-   driver: local
-   driver_opts:
-    type: 'none'
-    o: 'bind'
-    device: '/home/${USER}/data/wordpress'
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/${USER}/data/wordpress'
   db:
-   driver: local
-   driver_opts:
-    type: 'none'
-    o: 'bind'
-    device: '/home/${USER}/data/db'
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/${USER}/data/db'
 
 networks:
- inception_network:
-  driver: bridge
+  inception_network:
+    driver: bridge
