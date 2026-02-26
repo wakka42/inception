@@ -1,7 +1,7 @@
 version: "3"
 services:
   caddy:
-    image: caddy:2
+    image: caddy:2.11.1
     container_name: caddy
     restart: always
     ports:
@@ -58,7 +58,7 @@ services:
       - inception_network
 
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: phpmyadmin:5.2.3
     container_name: phpmyadmin
     restart: always
     ports:
@@ -71,7 +71,7 @@ services:
       - inception_network
 
   duckdns:
-    image: lscr.io/linuxserver/duckdns:latest
+    image: linuxserver/duckdns:version-33acdda4
     container_name: duckdns
     network_mode: host
     environment:
