@@ -1,0 +1,6 @@
+dasli42.duckdns.org {
+    root * /var/www/html
+    php_fastcgi wordpress:9000
+    file_server
+    encode zstd gzip
+}
