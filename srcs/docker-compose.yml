@@ -1,23 +1,21 @@
 version: "3"
 services:
-  nginx:
-    build:
-      context: requirements/nginx
-      dockerfile: Dockerfile
-    image: nginx
-    container_name: nginx
-    depends_on:
-      - wordpress
-    env_file:
-      - .env
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: always
     ports:
       - "80:80"
       - "443:443"
-    restart: always
+    environment:
+      - TZ=Etc/UTC
     volumes:
+      - caddy_data:/data
+      - caddy_config:/config
       - wordpress:/var/www/html
-      - ./requirements/nginx/sites-enabled:/etc/nginx/sites-enabled
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - wordpress
     networks:
       - inception_network
 
@@ -25,7 +23,6 @@ services:
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
-    image: wordpress
     container_name: wordpress
     depends_on:
       - redis
@@ -42,7 +39,6 @@ services:
     build:
       context: requirements/mariadb
       dockerfile: Dockerfile
-    image: mariadb
     container_name: mariadb
     env_file: .env
     restart: always
@@ -55,7 +51,6 @@ services:
     build:
       context: requirements/bonus/redis
       dockerfile: Dockerfile
-    image: redis
     container_name: redis
     env_file: .env
     restart: always
@@ -102,6 +97,8 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/home/${USER}/data/db'
+  caddy_data:
+  caddy_config:
 
 networks:
   inception_network:
